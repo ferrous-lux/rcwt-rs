@@ -1,0 +1,18 @@
+[package]
+name = "rcwt-rs"
+version = "0.1.0"
+edition = "2021"
+authors = ["Ferris Luxor ferrous_lux@hotmail.com"]
+description = "Rust library for reading and writing CCExtractor RCWT binary caption files"
+license = "MIT"
+repository = "https://github.com/ferrisluxor/rcwt-rs"
+homepage = "https://github.com/ferrisluxor/rcwt-rs"
+keywords = ["closed-captions", "rcwt", "captioning", "archival", "binary"]
+categories = ["encoding", "multimedia", "parsing"]
+readme = "README.md"
+
+[dependencies]
+byteorder = "1.4"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+hex = "0.4"
