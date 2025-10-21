@@ -1,5 +1,5 @@
 {
-  "json_schema_version": "0.7.0",
+  "json_schema_version": "0.1.0",
   "creating_program": "CC",
   "file_format_version": 1,
   "magic_number": "CCCCED",

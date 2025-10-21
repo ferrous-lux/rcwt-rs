@@ -31,7 +31,7 @@ pub struct RcwtJson {
 impl RcwtJson {
     pub fn from_cc_stream(stream: &CcStream) -> Self {
         RcwtJson {
-            json_schema_version: "0.7.0".to_string(), // ugh hard-coded version
+            json_schema_version: "0.1.0".to_string(), // ugh hard-coded version
             creating_program: format!("{:02X}", stream.file_header.creating_program),
             file_format_version: stream.file_header.file_format_version,
             magic_number: bytes_to_hex(stream.file_header.magic_number),
