@@ -42,7 +42,7 @@ cargo fmt --check
 ```
 src/
 ├── lib.rs         # Crate root: re-exports all public API
-├── archive.rs     # Archive<R: Read> — lazy streaming reader (tar-like)
+├── rcwt_stream.rs # RcwtStream<R: Read> — lazy streaming reader (tar-like)
 ├── builder.rs     # Builder<W: Write> + EntryWriter<'a, W: Write> — streaming writer
 ├── entries.rs     # Entries<'a, R: Read> (Iterator) + Entry (impl Read)
 ├── header.rs      # FileHeader + TimeHeader — binary parse/write
@@ -51,7 +51,7 @@ src/
 └── utils.rs       # read_exact_or_eof helper
 
 tests/
-├── roundtrip.rs   # Integration tests: Builder → Archive round-trips
+├── roundtrip.rs   # Integration tests: Builder → RcwtStream round-trips
 └── files/         # Test fixture data
 ```
 
@@ -73,7 +73,7 @@ Data structs derive: `Debug, Clone, PartialEq, Eq`
 - **Methods/fields**: snake_case
 - **Type params**: short uppercase (`R`, `W`, `N`)
 - **Binary parsing**: `.parse<R: Read>(reader: &mut R)`, `.write_rcwt<W: Write>(&self, writer: &mut W)`
-- **Reader pattern**: `<R: Read>` as generic on the struct (Archive) or method (parse)
+- **Reader pattern**: `<R: Read>` as generic on the struct (RcwtStream) or method (parse)
 
 ### Error Handling
 - `RcwtError` enum with `From<io::Error>` impl
@@ -84,7 +84,7 @@ Data structs derive: `Debug, Clone, PartialEq, Eq`
 ### Testing
 - Unit tests inline: `#[cfg(test)] mod tests` in each source file
 - Integration tests in `tests/*.rs`
-- Round-trip patterns: write with Builder → read with Archive → assert_eq
+- Round-trip patterns: write with Builder → read with RcwtStream → assert_eq
 
 ### Binaries
 
@@ -98,17 +98,17 @@ Run with: `cargo run --bin rcwt-report -- <file>`
 ## API Patterns
 ```rust
 // Reading (from file path)
-let mut archive = Archive::open("input.rcwt")?;
-println!("{:?}", archive.header.magic_number);
+let mut stream = RcwtStream::open("input.rcwt")?;
+println!("{:?}", stream.header.magic_number);
 
 // Reading (from any Read)
-let mut archive = Archive::new(reader)?;
-for entry in archive.entries() {
+let mut stream = RcwtStream::new(reader)?;
+for entry in stream.entries() {
     let entry: Entry = entry?;
     let data: &[u8] = entry.data();
 }
 
-// Reading without Archive (header parsed separately)
+// Reading without RcwtStream (header parsed separately)
 let header = FileHeader::parse(&mut reader)?;
 let entries = Entries::new(&mut reader);
 

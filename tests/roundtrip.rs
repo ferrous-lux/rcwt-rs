@@ -13,7 +13,7 @@ fn test_file_header() -> FileHeader {
 }
 
 #[test]
-fn builder_archive_roundtrip_single() {
+fn builder_stream_roundtrip_single() {
     let header = TimeHeader {
         fts: FTS(100),
         num_blocks: 1,
@@ -27,8 +27,8 @@ fn builder_archive_roundtrip_single() {
     }
 
     let cursor = Cursor::new(&buf);
-    let mut archive = Archive::new(cursor).unwrap();
-    let entries: Vec<Entry> = archive.entries().collect::<Result<Vec<_>, _>>().unwrap();
+    let mut stream = RcwtStream::new(cursor).unwrap();
+    let entries: Vec<Entry> = stream.entries().collect::<Result<Vec<_>, _>>().unwrap();
 
     assert_eq!(entries.len(), 1);
     assert_eq!(entries[0].time_header, header);
@@ -36,7 +36,7 @@ fn builder_archive_roundtrip_single() {
 }
 
 #[test]
-fn builder_archive_roundtrip_multiple() {
+fn builder_stream_roundtrip_multiple() {
     let records = vec![
         (TimeHeader { fts: FTS(100), num_blocks: 1 }, vec![0xFD, 0x01, 0x85]),
         (
@@ -55,8 +55,8 @@ fn builder_archive_roundtrip_multiple() {
     }
 
     let cursor = Cursor::new(&buf);
-    let mut archive = Archive::new(cursor).unwrap();
-    let entries: Vec<Entry> = archive.entries().collect::<Result<Vec<_>, _>>().unwrap();
+    let mut stream = RcwtStream::new(cursor).unwrap();
+    let entries: Vec<Entry> = stream.entries().collect::<Result<Vec<_>, _>>().unwrap();
 
     assert_eq!(entries.len(), 3);
     for (i, (exp_h, exp_d)) in records.iter().enumerate() {
@@ -66,19 +66,19 @@ fn builder_archive_roundtrip_multiple() {
 }
 
 #[test]
-fn archive_entries_empty_stream() {
+fn stream_entries_empty_stream() {
     let mut buf = Vec::new();
     Builder::new(&mut buf, &test_file_header()).unwrap();
 
     let cursor = Cursor::new(&buf);
-    let mut archive = Archive::new(cursor).unwrap();
-    let entries: Vec<Entry> = archive.entries().collect::<Result<Vec<_>, _>>().unwrap();
+    let mut stream = RcwtStream::new(cursor).unwrap();
+    let entries: Vec<Entry> = stream.entries().collect::<Result<Vec<_>, _>>().unwrap();
 
     assert!(entries.is_empty());
 }
 
 #[test]
-fn entry_implements_read_from_archive() {
+fn entry_implements_read_from_stream() {
     let header = TimeHeader {
         fts: FTS(100),
         num_blocks: 1,
@@ -92,8 +92,8 @@ fn entry_implements_read_from_archive() {
     }
 
     let cursor = Cursor::new(&buf);
-    let mut archive = Archive::new(cursor).unwrap();
-    let mut entry = archive.entries().next().unwrap().unwrap();
+    let mut stream = RcwtStream::new(cursor).unwrap();
+    let mut entry = stream.entries().next().unwrap().unwrap();
 
     let mut read_buf = [0u8; 3];
     entry.read_exact(&mut read_buf).unwrap();
@@ -114,8 +114,8 @@ fn entry_writer_roundtrip() {
     }
 
     let cursor = Cursor::new(&buf);
-    let mut archive = Archive::new(cursor).unwrap();
-    let entry = archive.entries().next().unwrap().unwrap();
+    let mut stream = RcwtStream::new(cursor).unwrap();
+    let entry = stream.entries().next().unwrap().unwrap();
 
     assert_eq!(entry.time_header.fts, fts);
     assert_eq!(entry.time_header.num_blocks, 2);

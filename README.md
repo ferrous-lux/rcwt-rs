@@ -39,10 +39,10 @@ use std::io::BufReader;
 use rcwt_rs::*;
 
 let file = BufReader::new(File::open("input.rcwt")?);
-let mut archive = Archive::new(file)?;
-println!("{:?}", archive.header.magic_number);
+let mut stream = RcwtStream::new(file)?;
+println!("{:?}", stream.header.magic_number);
 
-for entry in archive.entries() {
+for entry in stream.entries() {
     let entry: Entry = entry?;
     println!("fts={} data={:02X?}", entry.time_header.fts.0, entry.data());
 }

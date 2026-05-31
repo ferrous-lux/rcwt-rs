@@ -6,15 +6,15 @@ use crate::entries::Entries;
 use crate::error::RcwtError;
 use crate::header::FileHeader;
 
-pub struct Archive<R> {
+pub struct RcwtStream<R> {
     pub header: FileHeader,
     inner: R,
 }
 
-impl<R: Read> Archive<R> {
+impl<R: Read> RcwtStream<R> {
     pub fn new(mut reader: R) -> Result<Self, RcwtError> {
         let header = FileHeader::parse(&mut reader)?;
-        Ok(Archive { header, inner: reader })
+        Ok(RcwtStream { header, inner: reader })
     }
 
     pub fn into_inner(self) -> R {
@@ -30,11 +30,11 @@ impl<R: Read> Archive<R> {
     }
 }
 
-impl Archive<BufReader<File>> {
+impl RcwtStream<BufReader<File>> {
     pub fn open(path: impl AsRef<Path>) -> Result<Self, RcwtError> {
         let file = File::open(path)?;
         let mut reader = BufReader::new(file);
         let header = FileHeader::parse(&mut reader)?;
-        Ok(Archive { header, inner: reader })
+        Ok(RcwtStream { header, inner: reader })
     }
 }

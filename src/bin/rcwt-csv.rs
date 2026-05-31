@@ -10,7 +10,7 @@ fn main() {
         process::exit(1);
     }
 
-    let mut archive = match Archive::open(&args[1]) {
+    let mut stream = match RcwtStream::open(&args[1]) {
         Ok(a) => a,
         Err(e) => {
             eprintln!("Error opening {}: {}", args[1], e);
@@ -19,7 +19,7 @@ fn main() {
     };
 
     println!("index,fts_ms,fts_iso,size_bytes,data_hex");
-    for result in archive.entries() {
+    for result in stream.entries() {
         let entry = match result {
             Ok(e) => e,
             Err(e) => {

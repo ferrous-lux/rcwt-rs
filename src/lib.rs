@@ -1,4 +1,4 @@
-pub mod archive;
+pub mod rcwt_stream;
 pub mod builder;
 pub mod entries;
 pub mod error;
@@ -6,7 +6,7 @@ pub mod fts;
 pub mod header;
 pub mod utils;
 
-pub use archive::Archive;
+pub use rcwt_stream::RcwtStream;
 pub use builder::{Builder, EntryWriter};
 pub use entries::{Entries, Entry};
 pub use error::RcwtError;

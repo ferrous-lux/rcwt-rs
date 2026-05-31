@@ -10,7 +10,7 @@ fn main() {
         process::exit(1);
     }
 
-    let mut archive = match Archive::open(&args[1]) {
+    let mut stream = match RcwtStream::open(&args[1]) {
         Ok(a) => a,
         Err(e) => {
             eprintln!("Error opening {}: {}", args[1], e);
@@ -22,11 +22,11 @@ fn main() {
     println!("=================");
     println!();
     println!("File Header:");
-    println!("  Magic number:     {:02X?}", archive.header.magic_number);
-    println!("  Creating program: 0x{:02X}", archive.header.creating_program);
-    println!("  Program version:  {}", archive.header.program_version);
-    println!("  Format version:   {}", archive.header.file_format_version);
-    println!("  Reserved:         {:02X?}", archive.header.reserved);
+    println!("  Magic number:     {:02X?}", stream.header.magic_number);
+    println!("  Creating program: 0x{:02X}", stream.header.creating_program);
+    println!("  Program version:  {}", stream.header.program_version);
+    println!("  Format version:   {}", stream.header.file_format_version);
+    println!("  Reserved:         {:02X?}", stream.header.reserved);
     println!();
 
     let mut count: usize = 0;
@@ -35,7 +35,7 @@ fn main() {
     let mut biggest_bytes: usize = 0;
     let mut biggest_idx: usize = 0;
 
-    for result in archive.entries() {
+    for result in stream.entries() {
         let entry = match result {
             Ok(e) => e,
             Err(e) => {
