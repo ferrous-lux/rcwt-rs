@@ -55,8 +55,8 @@ use rcwt_rs::*;
 
 let header = FileHeader {
     magic_number: [0xCC, 0xCC, 0xED],
-    creating_program: 0xCC,
-    program_version: 80,
+    creating_program: 0xCC,   // 0xCC = CCExtractor, 0xFF = FFmpeg
+    program_version: 1,       // set your own program version
     file_format_version: 1,
     reserved: [0, 0, 0],
 };
@@ -65,6 +65,14 @@ let mut buf = Vec::new();
 let mut builder = Builder::new(&mut buf, &header)?;
 builder.append(&TimeHeader { fts: FTS(100), num_blocks: 1 }, &[0xFD, 0x01, 0x85])?;
 ```
+
+When writing RCWT files, set `creating_program` and `program_version` to identify
+your program. This helps track which software produced the file if there are bugs
+in the future. Known values: `0xCC` for CCExtractor, `0xFF` for FFmpeg.
+
+## Specification
+
+The RCWT binary format specification is in [`docs/rcwt-spec.txt`](docs/rcwt-spec.txt).
 
 ## Test Files
 
