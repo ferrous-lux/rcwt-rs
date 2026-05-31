@@ -12,4 +12,3 @@ categories = ["encoding", "multimedia", "parsing"]
 readme = "README.md"
 
 [dependencies]
-byteorder = "1.4"

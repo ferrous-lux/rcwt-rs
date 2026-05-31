@@ -1,6 +1,5 @@
 use std::io;
 use std::io::{Read, Write};
-use byteorder::ReadBytesExt;
 
 use crate::FTS;
 use crate::RcwtError;
@@ -19,7 +18,9 @@ impl FileHeader {
     pub fn parse<R: Read>(reader: &mut R) -> io::Result<Self> {
         let mut magic_number = [0; 3];
         reader.read_exact(&mut magic_number)?;
-        let creating_program = reader.read_u8()?;
+        let mut creating_buf = [0; 1];
+        reader.read_exact(&mut creating_buf)?;
+        let creating_program = creating_buf[0];
 
         let mut buf = [0; 2];
         reader.read_exact(&mut buf)?;
@@ -75,5 +76,49 @@ impl TimeHeader {
         writer.write_all(&self.fts.0.to_le_bytes())?;
         writer.write_all(&self.num_blocks.to_le_bytes())?;
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::io::Cursor;
+
+    #[test]
+    fn file_header_roundtrip() {
+        let header = FileHeader {
+            magic_number: [b'C', b'C', b'C'],
+            creating_program: 0xCC,
+            program_version: 80,
+            file_format_version: 1,
+            reserved: [0, 0, 0],
+        };
+        let mut buf = Vec::new();
+        header.write_rcwt(&mut buf).unwrap();
+
+        let mut cursor = Cursor::new(&buf);
+        let parsed = FileHeader::parse(&mut cursor).unwrap();
+        assert_eq!(header, parsed);
+    }
+
+    #[test]
+    fn time_header_roundtrip() {
+        let header = TimeHeader {
+            fts: FTS(12345),
+            num_blocks: 3,
+        };
+        let mut buf = Vec::new();
+        header.write_rcwt(&mut buf).unwrap();
+
+        let mut cursor = Cursor::new(&buf);
+        let parsed = TimeHeader::parse(&mut cursor).unwrap();
+        assert_eq!(header, parsed);
+    }
+
+    #[test]
+    fn time_header_eof_returns_eof_error() {
+        let mut cursor = Cursor::new(&b""[..]);
+        let result = TimeHeader::parse(&mut cursor);
+        assert!(matches!(result, Err(RcwtError::Eof)));
     }
 }
