@@ -1,10 +1,16 @@
+pub mod archive;
+pub mod builder;
+pub mod entries;
+pub mod error;
 pub mod fts;
 pub mod header;
 pub mod rcwt;
-pub mod error;
 pub mod utils;
 
+pub use archive::Archive;
+pub use builder::{Builder, EntryWriter};
+pub use entries::{Entries, Entry};
+pub use error::RcwtError;
 pub use fts::FTS;
 pub use header::{FileHeader, TimeHeader};
-pub use crate::rcwt::stream::parse_rcwt_stream;
-pub use error::RcwtError;
+pub use rcwt::stream::parse_rcwt_stream;
