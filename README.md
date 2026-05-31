@@ -2,7 +2,9 @@
 
 A Rust library for reading and writing CCExtractor RCWT (Raw Captions With Time) binary caption files.
 
-Zero dependencies. Streaming by design — modeled after the `tar` crate.
+Only file format version 1 is supported at this time.
+
+Zero dependencies. Streaming by design - modeled after the `tar` crate.
 
 ## Features
 
