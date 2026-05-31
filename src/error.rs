@@ -1,25 +1,17 @@
-// stubbing out
-
 use std::io;
 
 #[derive(Debug)]
 pub enum RcwtError {
     Io(io::Error),
-    Json(serde_json::Error),
     InvalidHeader,
+    UnsupportedVersion(u16),
     UnexpectedEOF,
-    Eof
+    Eof,
 }
 
 impl From<io::Error> for RcwtError {
     fn from(err: io::Error) -> RcwtError {
         RcwtError::Io(err)
-    }
-}
-
-impl From<serde_json::Error> for RcwtError {
-    fn from(err: serde_json::Error) -> RcwtError {
-        RcwtError::Json(err)
     }
 }
 
@@ -31,8 +23,11 @@ impl std::fmt::Display for RcwtError {
             RcwtError::Eof => write!(f, "End of file"),
             RcwtError::Io(e) => write!(f, "I/O error: {}", e),
             RcwtError::InvalidHeader => write!(f, "Invalid RCWT header"),
-            RcwtError::Json(e) => write!(f, "JSON error: {}", e),
-            RcwtError::UnexpectedEOF => write!(f, "Unexpected end of file")
+            RcwtError::UnsupportedVersion(v) => write!(
+                f,
+                "Unsupported RCWT format version: {v} (only v1 supported)"
+            ),
+            RcwtError::UnexpectedEOF => write!(f, "Unexpected end of file"),
         }
     }
 }
