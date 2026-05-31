@@ -90,6 +90,7 @@ Data structs derive: `Debug, Clone, PartialEq, Eq`
 
 ```
 rcwt-report <input.rcwt>   # Prints file header info, entry count, first/last FTS, largest entry
+rcwt-csv <input.rcwt>      # Dumps all entries as CSV: index, fts_ms, fts_iso, size_bytes, data_hex
 ```
 
 Run with: `cargo run --bin rcwt-report -- <file>`
