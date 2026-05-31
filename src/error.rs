@@ -4,6 +4,7 @@ use std::io;
 pub enum RcwtError {
     Io(io::Error),
     InvalidHeader,
+    UnsupportedVersion(u16),
     UnexpectedEOF,
     Eof,
 }
@@ -22,6 +23,10 @@ impl std::fmt::Display for RcwtError {
             RcwtError::Eof => write!(f, "End of file"),
             RcwtError::Io(e) => write!(f, "I/O error: {}", e),
             RcwtError::InvalidHeader => write!(f, "Invalid RCWT header"),
+            RcwtError::UnsupportedVersion(v) => write!(
+                f,
+                "Unsupported RCWT format version: {v} (only v1 supported)"
+            ),
             RcwtError::UnexpectedEOF => write!(f, "Unexpected end of file"),
         }
     }

@@ -5,6 +5,9 @@ use crate::FTS;
 
 const RCWT_MAGIC: [u8; 3] = [0xCC, 0xCC, 0xED];
 
+pub const RCWT_CREATING_PROGRAM: u8 = 0x72; // 'r' for rcwt-rs
+pub const RCWT_PROGRAM_VERSION: u16 = 1;
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FileHeader {
     pub magic_number: [u8; 3],
@@ -33,6 +36,10 @@ impl FileHeader {
 
         let mut reserved = [0; 3];
         reader.read_exact(&mut reserved)?;
+
+        if file_format_version != 1 {
+            return Err(RcwtError::UnsupportedVersion(file_format_version));
+        }
 
         Ok(FileHeader {
             magic_number,
@@ -96,7 +103,6 @@ fn read_exact_or_eof<R: Read>(reader: &mut R, buf: &mut [u8]) -> Result<bool, Rc
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::io::Cursor;
 
     #[test]
     fn file_header_roundtrip() {
@@ -110,8 +116,7 @@ mod tests {
         let mut buf = Vec::new();
         header.write_rcwt(&mut buf).unwrap();
 
-        let mut cursor = Cursor::new(&buf);
-        let parsed = FileHeader::parse(&mut cursor).unwrap();
+        let parsed = FileHeader::parse(&mut buf.as_slice()).unwrap();
         assert_eq!(header, parsed);
     }
 
@@ -124,15 +129,26 @@ mod tests {
         let mut buf = Vec::new();
         header.write_rcwt(&mut buf).unwrap();
 
-        let mut cursor = Cursor::new(&buf);
-        let parsed = TimeHeader::parse(&mut cursor).unwrap();
+        let parsed = TimeHeader::parse(&mut buf.as_slice()).unwrap();
         assert_eq!(header, parsed);
     }
 
     #[test]
     fn time_header_eof_returns_eof_error() {
-        let mut cursor = Cursor::new(&b""[..]);
-        let result = TimeHeader::parse(&mut cursor);
+        let result = TimeHeader::parse(&mut &b""[..]);
         assert!(matches!(result, Err(RcwtError::Eof)));
+    }
+
+    #[test]
+    fn file_header_rejects_version_2() {
+        // Build a v2 header: magic + CC + version(0,2) + format(0,2) + reserved
+        let mut buf = Vec::new();
+        buf.extend_from_slice(b"\xCC\xCC\xED");
+        buf.push(0xCC); // creating program
+        buf.extend_from_slice(&80u16.to_be_bytes()); // program version
+        buf.extend_from_slice(&2u16.to_be_bytes()); // file format version = 2
+        buf.extend_from_slice(&[0, 0, 0]); // reserved
+        let result = FileHeader::parse(&mut buf.as_slice());
+        assert!(matches!(result, Err(RcwtError::UnsupportedVersion(2))));
     }
 }

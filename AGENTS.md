@@ -44,9 +44,9 @@ src/
 ├── lib.rs         # Crate root: re-exports all public API
 ├── rcwt_stream.rs # RcwtStream<R: Read> — lazy streaming reader
 ├── builder.rs     # Builder<W: Write> + EntryWriter<'a, W: Write>
-├── entries.rs     # Entries<'a, R: Read> (Iterator) + Entry (impl Read)
+├── entries.rs     # Entries<'a, R: Read> (Iterator) + Entry + CcBlock
 ├── header.rs      # FileHeader + TimeHeader — binary parse/write
-├── fts.rs         # FTS(pub u64) — File Timestamp in milliseconds
+├── fts.rs         # FTS(pub u64) — Frame Timestamp in milliseconds
 └── error.rs       # RcwtError — Io, InvalidHeader, UnexpectedEOF, Eof
 
 tests/
@@ -88,8 +88,10 @@ Data structs derive: `Debug, Clone, PartialEq, Eq`
 ### Binaries
 
 ```
-rcwt-report <input.rcwt>   # Prints file header info, entry count, first/last FTS, largest entry
+rcwt-report [--json] <input.rcwt>   # Prints file header info, entry count, first/last FTS, largest entry, per-channel CC block summary. --json for JSON output.
 rcwt-csv <input.rcwt>      # Dumps all entries as CSV: index, fts_ms, fts_iso, size_bytes, data_hex
+rcwt-split <input.rcwt>    # Splits into CC1-CC4 and CEA-708 RCWT files
+rcwt-trim <input> <output> <N>  # Copies first N entries to a new RCWT file
 ```
 
 Run with: `cargo run --bin rcwt-report -- <file>`

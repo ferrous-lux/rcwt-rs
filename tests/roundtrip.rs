@@ -1,4 +1,4 @@
-use std::io::{Cursor, Read, Write};
+use std::io::Write;
 
 use rcwt_rs::*;
 
@@ -26,8 +26,7 @@ fn builder_stream_roundtrip_single() {
         builder.append(&header, &data).unwrap();
     }
 
-    let cursor = Cursor::new(&buf);
-    let mut stream = RcwtStream::new(cursor).unwrap();
+    let mut stream = RcwtStream::new(buf.as_slice()).unwrap();
     let entries: Vec<Entry> = stream.entries().collect::<Result<Vec<_>, _>>().unwrap();
 
     assert_eq!(entries.len(), 1);
@@ -69,8 +68,7 @@ fn builder_stream_roundtrip_multiple() {
         }
     }
 
-    let cursor = Cursor::new(&buf);
-    let mut stream = RcwtStream::new(cursor).unwrap();
+    let mut stream = RcwtStream::new(buf.as_slice()).unwrap();
     let entries: Vec<Entry> = stream.entries().collect::<Result<Vec<_>, _>>().unwrap();
 
     assert_eq!(entries.len(), 3);
@@ -92,34 +90,10 @@ fn stream_entries_empty_stream() {
     let mut buf = Vec::new();
     Builder::new(&mut buf, &test_file_header()).unwrap();
 
-    let cursor = Cursor::new(&buf);
-    let mut stream = RcwtStream::new(cursor).unwrap();
+    let mut stream = RcwtStream::new(buf.as_slice()).unwrap();
     let entries: Vec<Entry> = stream.entries().collect::<Result<Vec<_>, _>>().unwrap();
 
     assert!(entries.is_empty());
-}
-
-#[test]
-fn entry_implements_read_from_stream() {
-    let header = TimeHeader {
-        fts: FTS(100),
-        num_blocks: 1,
-    };
-    let data = vec![0xFD, 0x01, 0x85];
-
-    let mut buf = Vec::new();
-    {
-        let mut builder = Builder::new(&mut buf, &test_file_header()).unwrap();
-        builder.append(&header, &data).unwrap();
-    }
-
-    let cursor = Cursor::new(&buf);
-    let mut stream = RcwtStream::new(cursor).unwrap();
-    let mut entry = stream.entries().next().unwrap().unwrap();
-
-    let mut read_buf = [0u8; 3];
-    entry.read_exact(&mut read_buf).unwrap();
-    assert_eq!(&read_buf[..], &data[..]);
 }
 
 #[test]
@@ -135,8 +109,7 @@ fn entry_writer_roundtrip() {
         writer.finish().unwrap();
     }
 
-    let cursor = Cursor::new(&buf);
-    let mut stream = RcwtStream::new(cursor).unwrap();
+    let mut stream = RcwtStream::new(buf.as_slice()).unwrap();
     let entry = stream.entries().next().unwrap().unwrap();
 
     assert_eq!(entry.time_header.fts, fts);

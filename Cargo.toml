@@ -11,4 +11,7 @@ keywords = ["closed-captions", "rcwt", "captioning", "archival", "binary"]
 categories = ["encoding", "multimedia", "parsing"]
 readme = "README.md"
 
+[profile.release]
+strip=true
+
 [dependencies]
