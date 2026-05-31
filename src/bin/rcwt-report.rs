@@ -23,7 +23,10 @@ fn main() {
     println!();
     println!("File Header:");
     println!("  Magic number:     {:02X?}", stream.header.magic_number);
-    println!("  Creating program: 0x{:02X}", stream.header.creating_program);
+    println!(
+        "  Creating program: 0x{:02X}",
+        stream.header.creating_program
+    );
     println!("  Program version:  {}", stream.header.program_version);
     println!("  Format version:   {}", stream.header.file_format_version);
     println!("  Reserved:         {:02X?}", stream.header.reserved);

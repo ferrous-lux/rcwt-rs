@@ -1,7 +1,7 @@
 use std::io::{Read, Write};
 
-use crate::FTS;
 use crate::RcwtError;
+use crate::FTS;
 
 const RCWT_MAGIC: [u8; 3] = [0xCC, 0xCC, 0xED];
 

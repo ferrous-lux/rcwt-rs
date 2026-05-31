@@ -14,7 +14,10 @@ pub struct RcwtStream<R> {
 impl<R: Read> RcwtStream<R> {
     pub fn new(mut reader: R) -> Result<Self, RcwtError> {
         let header = FileHeader::parse(&mut reader)?;
-        Ok(RcwtStream { header, inner: reader })
+        Ok(RcwtStream {
+            header,
+            inner: reader,
+        })
     }
 
     pub fn into_inner(self) -> R {
@@ -35,6 +38,9 @@ impl RcwtStream<BufReader<File>> {
         let file = File::open(path)?;
         let mut reader = BufReader::new(file);
         let header = FileHeader::parse(&mut reader)?;
-        Ok(RcwtStream { header, inner: reader })
+        Ok(RcwtStream {
+            header,
+            inner: reader,
+        })
     }
 }

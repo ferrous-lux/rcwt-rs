@@ -5,7 +5,7 @@ pub enum RcwtError {
     Io(io::Error),
     InvalidHeader,
     UnexpectedEOF,
-    Eof
+    Eof,
 }
 
 impl From<io::Error> for RcwtError {
@@ -22,7 +22,7 @@ impl std::fmt::Display for RcwtError {
             RcwtError::Eof => write!(f, "End of file"),
             RcwtError::Io(e) => write!(f, "I/O error: {}", e),
             RcwtError::InvalidHeader => write!(f, "Invalid RCWT header"),
-            RcwtError::UnexpectedEOF => write!(f, "Unexpected end of file")
+            RcwtError::UnexpectedEOF => write!(f, "Unexpected end of file"),
         }
     }
 }

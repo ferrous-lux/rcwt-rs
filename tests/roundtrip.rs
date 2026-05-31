@@ -38,12 +38,27 @@ fn builder_stream_roundtrip_single() {
 #[test]
 fn builder_stream_roundtrip_multiple() {
     let records = vec![
-        (TimeHeader { fts: FTS(100), num_blocks: 1 }, vec![0xFD, 0x01, 0x85]),
         (
-            TimeHeader { fts: FTS(200), num_blocks: 2 },
+            TimeHeader {
+                fts: FTS(100),
+                num_blocks: 1,
+            },
+            vec![0xFD, 0x01, 0x85],
+        ),
+        (
+            TimeHeader {
+                fts: FTS(200),
+                num_blocks: 2,
+            },
             vec![0xFD, 0x01, 0x86, 0xFD, 0x01, 0x87],
         ),
-        (TimeHeader { fts: FTS(300), num_blocks: 1 }, vec![0xFC, 0x02, 0x80]),
+        (
+            TimeHeader {
+                fts: FTS(300),
+                num_blocks: 1,
+            },
+            vec![0xFC, 0x02, 0x80],
+        ),
     ];
 
     let mut buf = Vec::new();
@@ -60,8 +75,15 @@ fn builder_stream_roundtrip_multiple() {
 
     assert_eq!(entries.len(), 3);
     for (i, (exp_h, exp_d)) in records.iter().enumerate() {
-        assert_eq!(entries[i].time_header, *exp_h, "entry {i}: time header mismatch");
-        assert_eq!(entries[i].data(), exp_d.as_slice(), "entry {i}: data mismatch");
+        assert_eq!(
+            entries[i].time_header, *exp_h,
+            "entry {i}: time header mismatch"
+        );
+        assert_eq!(
+            entries[i].data(),
+            exp_d.as_slice(),
+            "entry {i}: data mismatch"
+        );
     }
 }
 

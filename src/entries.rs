@@ -21,47 +21,6 @@ impl Read for Entry {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::FTS;
-    use std::io::Cursor;
-
-    #[test]
-    fn entry_data() {
-        let entry = Entry {
-            index: 1,
-            time_header: TimeHeader {
-                fts: FTS(100),
-                num_blocks: 1,
-            },
-            cursor: Cursor::new(vec![0xFD, 0x01, 0x85]),
-        };
-        assert_eq!(entry.index, 1);
-        assert_eq!(entry.time_header.fts, FTS(100));
-        assert_eq!(entry.time_header.num_blocks, 1);
-        assert_eq!(entry.data(), &[0xFD, 0x01, 0x85]);
-    }
-
-    #[test]
-    fn entry_implements_read() {
-        let mut entry = Entry {
-            index: 1,
-            time_header: TimeHeader {
-                fts: FTS(100),
-                num_blocks: 1,
-            },
-            cursor: Cursor::new(vec![0xFD, 0x01, 0x85]),
-        };
-        let mut buf = [0u8; 3];
-        entry.read_exact(&mut buf).unwrap();
-        assert_eq!(buf, [0xFD, 0x01, 0x85]);
-        // Further reads should return Ok(0)
-        let n = entry.read(&mut buf).unwrap();
-        assert_eq!(n, 0);
-    }
-}
-
 pub struct Entries<'a, R> {
     reader: &'a mut R,
     index: usize,
@@ -115,5 +74,45 @@ impl<'a, R: Read> Iterator for Entries<'a, R> {
                 Some(Err(e))
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::FTS;
+    use std::io::Cursor;
+
+    #[test]
+    fn entry_data() {
+        let entry = Entry {
+            index: 1,
+            time_header: TimeHeader {
+                fts: FTS(100),
+                num_blocks: 1,
+            },
+            cursor: Cursor::new(vec![0xFD, 0x01, 0x85]),
+        };
+        assert_eq!(entry.index, 1);
+        assert_eq!(entry.time_header.fts, FTS(100));
+        assert_eq!(entry.time_header.num_blocks, 1);
+        assert_eq!(entry.data(), &[0xFD, 0x01, 0x85]);
+    }
+
+    #[test]
+    fn entry_implements_read() {
+        let mut entry = Entry {
+            index: 1,
+            time_header: TimeHeader {
+                fts: FTS(100),
+                num_blocks: 1,
+            },
+            cursor: Cursor::new(vec![0xFD, 0x01, 0x85]),
+        };
+        let mut buf = [0u8; 3];
+        entry.read_exact(&mut buf).unwrap();
+        assert_eq!(buf, [0xFD, 0x01, 0x85]);
+        let n = entry.read(&mut buf).unwrap();
+        assert_eq!(n, 0);
     }
 }

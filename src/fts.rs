@@ -64,7 +64,7 @@ mod tests {
     #[test]
     fn iso_format() {
         assert_eq!(FTS(0).iso_format(), "00:00:00.000");
-        assert_eq!(FTS(3661_123).iso_format(), "01:01:01.123");
+        assert_eq!(FTS(3_661_123).iso_format(), "01:01:01.123");
         assert_eq!(FTS(5000).iso_format(), "00:00:05.000");
     }
 }
