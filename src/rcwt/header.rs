@@ -1,16 +1,12 @@
-// external imports
-use serde::{Serialize, Deserialize};
 use std::io;
 use std::io::{Read, Write};
 use byteorder::ReadBytesExt;
 
-// internal imports
 use crate::FTS;
 use crate::RcwtError;
-use crate::formats::json::{CaptionRecordJson, RcwtJson};
-use crate::utils::{parse_hex, read_exact_or_eof};
+use crate::utils::read_exact_or_eof;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FileHeader {
     pub magic_number: [u8; 3],      // CCCCED
     pub creating_program: u8,       // CC
@@ -42,15 +38,6 @@ impl FileHeader {
             reserved,
         })
     }
-    pub fn from_json(json: &RcwtJson) -> Result<Self, RcwtError> {
-        Ok(FileHeader {
-            creating_program: parse_hex::<1>(&json.creating_program)?[0],
-            file_format_version: json.file_format_version,
-            magic_number: parse_hex::<3>(&json.magic_number)?,
-            program_version: json.program_version,
-            reserved: parse_hex::<3>(&json.reserved)?,
-        })
-    }
     pub fn write_rcwt<W: Write>(&self, writer: &mut W) -> Result<(), RcwtError> {
         writer.write_all(&self.magic_number)?;                         // [u8; 3]
         writer.write_all(&[self.creating_program])?;                   // u8
@@ -62,7 +49,7 @@ impl FileHeader {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TimeHeader {
     pub fts: FTS,
     pub num_blocks: u16,
@@ -83,12 +70,6 @@ impl TimeHeader {
         let num_blocks = u16::from_le_bytes(num_blocks_buf);
 
         Ok(TimeHeader { fts, num_blocks })
-    }
-    pub fn from_json(json: &CaptionRecordJson) -> Self {
-        TimeHeader {
-            fts: FTS(json.fts),
-            num_blocks: json.blocks,
-        }
     }
     pub fn write_rcwt<W: Write>(&self, writer: &mut W) -> Result<(), RcwtError> {
         writer.write_all(&self.fts.0.to_le_bytes())?;

@@ -2,7 +2,6 @@ pub mod fts;
 pub mod header;
 pub mod rcwt;
 pub mod error;
-pub mod formats;
 pub mod utils;
 
 pub use fts::FTS;

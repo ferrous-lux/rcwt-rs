@@ -1,14 +1,10 @@
-// external imports
-use serde::{Serialize, Deserialize};
 use std::io::{Read, Write};
 
-// internal imports
 use crate::RcwtError;
 use crate::rcwt::header::FileHeader;
 use crate::rcwt::record::CaptionRecord;
 
-
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CcStream {
     pub file_header: FileHeader,
     pub records: Vec<CaptionRecord>,
