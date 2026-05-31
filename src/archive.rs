@@ -1,20 +1,20 @@
-use std::io::Read;
+use std::fs::File;
+use std::io::{BufReader, Read};
+use std::path::Path;
 
 use crate::entries::Entries;
 use crate::error::RcwtError;
 use crate::header::FileHeader;
 
 pub struct Archive<R> {
+    pub header: FileHeader,
     inner: R,
-    header: Option<FileHeader>,
 }
 
 impl<R: Read> Archive<R> {
-    pub fn new(reader: R) -> Self {
-        Archive {
-            inner: reader,
-            header: None,
-        }
+    pub fn new(mut reader: R) -> Result<Self, RcwtError> {
+        let header = FileHeader::parse(&mut reader)?;
+        Ok(Archive { header, inner: reader })
     }
 
     pub fn into_inner(self) -> R {
@@ -25,15 +25,16 @@ impl<R: Read> Archive<R> {
         &mut self.inner
     }
 
-    pub fn header(&self) -> Option<&FileHeader> {
-        self.header.as_ref()
+    pub fn entries(&mut self) -> Entries<'_, R> {
+        Entries::new(&mut self.inner)
     }
+}
 
-    pub fn entries(&mut self) -> Result<Entries<'_, R>, RcwtError> {
-        if self.header.is_none() {
-            let h = FileHeader::parse(&mut self.inner)?;
-            self.header = Some(h);
-        }
-        Ok(Entries::new(&mut self.inner))
+impl Archive<BufReader<File>> {
+    pub fn open(path: impl AsRef<Path>) -> Result<Self, RcwtError> {
+        let file = File::open(path)?;
+        let mut reader = BufReader::new(file);
+        let header = FileHeader::parse(&mut reader)?;
+        Ok(Archive { header, inner: reader })
     }
 }

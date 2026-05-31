@@ -27,12 +27,8 @@ fn builder_archive_roundtrip_single() {
     }
 
     let cursor = Cursor::new(&buf);
-    let mut archive = Archive::new(cursor);
-    let entries: Vec<Entry> = archive
-        .entries()
-        .unwrap()
-        .collect::<Result<Vec<_>, _>>()
-        .unwrap();
+    let mut archive = Archive::new(cursor).unwrap();
+    let entries: Vec<Entry> = archive.entries().collect::<Result<Vec<_>, _>>().unwrap();
 
     assert_eq!(entries.len(), 1);
     assert_eq!(entries[0].time_header, header);
@@ -59,12 +55,8 @@ fn builder_archive_roundtrip_multiple() {
     }
 
     let cursor = Cursor::new(&buf);
-    let mut archive = Archive::new(cursor);
-    let entries: Vec<Entry> = archive
-        .entries()
-        .unwrap()
-        .collect::<Result<Vec<_>, _>>()
-        .unwrap();
+    let mut archive = Archive::new(cursor).unwrap();
+    let entries: Vec<Entry> = archive.entries().collect::<Result<Vec<_>, _>>().unwrap();
 
     assert_eq!(entries.len(), 3);
     for (i, (exp_h, exp_d)) in records.iter().enumerate() {
@@ -79,12 +71,8 @@ fn archive_entries_empty_stream() {
     Builder::new(&mut buf, &test_file_header()).unwrap();
 
     let cursor = Cursor::new(&buf);
-    let mut archive = Archive::new(cursor);
-    let entries: Vec<Entry> = archive
-        .entries()
-        .unwrap()
-        .collect::<Result<Vec<_>, _>>()
-        .unwrap();
+    let mut archive = Archive::new(cursor).unwrap();
+    let entries: Vec<Entry> = archive.entries().collect::<Result<Vec<_>, _>>().unwrap();
 
     assert!(entries.is_empty());
 }
@@ -104,8 +92,8 @@ fn entry_implements_read_from_archive() {
     }
 
     let cursor = Cursor::new(&buf);
-    let mut archive = Archive::new(cursor);
-    let mut entry = archive.entries().unwrap().next().unwrap().unwrap();
+    let mut archive = Archive::new(cursor).unwrap();
+    let mut entry = archive.entries().next().unwrap().unwrap();
 
     let mut read_buf = [0u8; 3];
     entry.read_exact(&mut read_buf).unwrap();
@@ -126,8 +114,8 @@ fn entry_writer_roundtrip() {
     }
 
     let cursor = Cursor::new(&buf);
-    let mut archive = Archive::new(cursor);
-    let entry = archive.entries().unwrap().next().unwrap().unwrap();
+    let mut archive = Archive::new(cursor).unwrap();
+    let entry = archive.entries().next().unwrap().unwrap();
 
     assert_eq!(entry.time_header.fts, fts);
     assert_eq!(entry.time_header.num_blocks, 2);

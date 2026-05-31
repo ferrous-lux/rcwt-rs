@@ -94,11 +94,15 @@ rcwt-report <input.rcwt>   # Prints file header info, entry count, first/last FT
 
 Run with: `cargo run --bin rcwt-report -- <file>`
 
-## Tar-like API Patterns
+## API Patterns
 ```rust
-// Reading
-let mut archive = Archive::new(reader);
-for entry in archive.entries()? {
+// Reading (from file path)
+let mut archive = Archive::open("input.rcwt")?;
+println!("{:?}", archive.header.magic_number);
+
+// Reading (from any Read)
+let mut archive = Archive::new(reader)?;
+for entry in archive.entries() {
     let entry: Entry = entry?;
     let data: &[u8] = entry.data();
 }

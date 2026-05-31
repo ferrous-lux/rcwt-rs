@@ -1,6 +1,4 @@
 use std::env;
-use std::fs::File;
-use std::io::BufReader;
 use std::process;
 
 use rcwt_rs::*;
@@ -12,37 +10,24 @@ fn main() {
         process::exit(1);
     }
 
-    let path = &args[1];
-    let file = match File::open(path) {
-        Ok(f) => f,
+    let mut archive = match Archive::open(&args[1]) {
+        Ok(a) => a,
         Err(e) => {
-            eprintln!("Error opening {}: {}", path, e);
+            eprintln!("Error opening {}: {}", args[1], e);
             process::exit(1);
         }
     };
-    let mut reader = BufReader::new(file);
 
     println!("RCWT File Report");
     println!("=================");
     println!();
-
-    let header = match FileHeader::parse(&mut reader) {
-        Ok(h) => h,
-        Err(e) => {
-            eprintln!("Error reading file header: {}", e);
-            process::exit(1);
-        }
-    };
-
     println!("File Header:");
-    println!("  Magic number:     {:02X?}", header.magic_number);
-    println!("  Creating program: 0x{:02X}", header.creating_program);
-    println!("  Program version:  {}", header.program_version);
-    println!("  Format version:   {}", header.file_format_version);
-    println!("  Reserved:         {:02X?}", header.reserved);
+    println!("  Magic number:     {:02X?}", archive.header.magic_number);
+    println!("  Creating program: 0x{:02X}", archive.header.creating_program);
+    println!("  Program version:  {}", archive.header.program_version);
+    println!("  Format version:   {}", archive.header.file_format_version);
+    println!("  Reserved:         {:02X?}", archive.header.reserved);
     println!();
-
-    let entries = Entries::new(&mut reader);
 
     let mut count: usize = 0;
     let mut first_fts: Option<FTS> = None;
@@ -50,7 +35,7 @@ fn main() {
     let mut biggest_bytes: usize = 0;
     let mut biggest_idx: usize = 0;
 
-    for result in entries {
+    for result in archive.entries() {
         let entry = match result {
             Ok(e) => e,
             Err(e) => {
