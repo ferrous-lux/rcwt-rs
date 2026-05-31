@@ -4,7 +4,7 @@ use rcwt_rs::*;
 
 fn test_file_header() -> FileHeader {
     FileHeader {
-        magic_number: [b'C', b'C', b'C'],
+        magic_number: [0xCC, 0xCC, 0xED],
         creating_program: 0xCC,
         program_version: 80,
         file_format_version: 1,

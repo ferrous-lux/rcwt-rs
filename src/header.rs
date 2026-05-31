@@ -1,9 +1,10 @@
-use std::io;
 use std::io::{Read, Write};
 
 use crate::FTS;
 use crate::RcwtError;
 use crate::utils::read_exact_or_eof;
+
+const RCWT_MAGIC: [u8; 3] = [0xCC, 0xCC, 0xED];
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FileHeader {
@@ -15,9 +16,12 @@ pub struct FileHeader {
 }
 
 impl FileHeader {
-    pub fn parse<R: Read>(reader: &mut R) -> io::Result<Self> {
+    pub fn parse<R: Read>(reader: &mut R) -> Result<Self, RcwtError> {
         let mut magic_number = [0; 3];
         reader.read_exact(&mut magic_number)?;
+        if magic_number != RCWT_MAGIC {
+            return Err(RcwtError::InvalidHeader);
+        }
         let mut creating_buf = [0; 1];
         reader.read_exact(&mut creating_buf)?;
         let creating_program = creating_buf[0];
@@ -87,7 +91,7 @@ mod tests {
     #[test]
     fn file_header_roundtrip() {
         let header = FileHeader {
-            magic_number: [b'C', b'C', b'C'],
+            magic_number: [0xCC, 0xCC, 0xED],
             creating_program: 0xCC,
             program_version: 80,
             file_format_version: 1,
