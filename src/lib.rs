@@ -4,7 +4,6 @@ pub mod entries;
 pub mod error;
 pub mod fts;
 pub mod header;
-pub mod utils;
 
 pub use rcwt_stream::RcwtStream;
 pub use builder::{Builder, EntryWriter};

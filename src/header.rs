@@ -2,7 +2,6 @@ use std::io::{Read, Write};
 
 use crate::FTS;
 use crate::RcwtError;
-use crate::utils::read_exact_or_eof;
 
 const RCWT_MAGIC: [u8; 3] = [0xCC, 0xCC, 0xED];
 
@@ -81,6 +80,17 @@ impl TimeHeader {
         writer.write_all(&self.num_blocks.to_le_bytes())?;
         Ok(())
     }
+}
+
+fn read_exact_or_eof<R: Read>(reader: &mut R, buf: &mut [u8]) -> Result<bool, RcwtError> {
+    let mut total = 0;
+    while total < buf.len() {
+        match reader.read(&mut buf[total..])? {
+            0 => return Ok(false),
+            n => total += n,
+        }
+    }
+    Ok(true)
 }
 
 #[cfg(test)]

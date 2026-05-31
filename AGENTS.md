@@ -42,13 +42,12 @@ cargo fmt --check
 ```
 src/
 ├── lib.rs         # Crate root: re-exports all public API
-├── rcwt_stream.rs # RcwtStream<R: Read> — lazy streaming reader (tar-like)
-├── builder.rs     # Builder<W: Write> + EntryWriter<'a, W: Write> — streaming writer
+├── rcwt_stream.rs # RcwtStream<R: Read> — lazy streaming reader
+├── builder.rs     # Builder<W: Write> + EntryWriter<'a, W: Write>
 ├── entries.rs     # Entries<'a, R: Read> (Iterator) + Entry (impl Read)
 ├── header.rs      # FileHeader + TimeHeader — binary parse/write
 ├── fts.rs         # FTS(pub u64) — File Timestamp in milliseconds
-├── error.rs       # RcwtError — Io, InvalidHeader, UnexpectedEOF, Eof
-└── utils.rs       # read_exact_or_eof helper
+└── error.rs       # RcwtError — Io, InvalidHeader, UnexpectedEOF, Eof
 
 tests/
 ├── roundtrip.rs   # Integration tests: Builder → RcwtStream round-trips

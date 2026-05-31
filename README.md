@@ -9,7 +9,7 @@ Zero dependencies. Streaming by design — modeled after the `tar` crate.
 - Parse RCWT binary files into a lazy streaming iterator of entries
 - Write RCWT binary files via a streaming builder
 - Entry data accessible via `Read` impl
-- No in-memory buffering of the full archive
+- No in-memory buffering of the full file/stream
 - CLI tools for inspection
 
 ## CLI Tools
