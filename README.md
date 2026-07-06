@@ -34,6 +34,9 @@ cargo run --bin rcwt-crop -- input.rcwt output.rcwt <start_fts> <end_fts>
 
 # Shift all FTS values by a delta (positive or negative)
 cargo run --bin rcwt-shift -- input.rcwt output.rcwt <delta_ms>
+
+# Concatenate multiple RCWT files with FTS overlap check
+cargo run --bin rcwt-concat -- <input1.rcwt> [<input2.rcwt> ...] <output.rcwt>
 ```
 
 ## Usage in Your Project
@@ -83,7 +86,7 @@ builder.append(&TimeHeader { fts: FTS(100), num_blocks: 1 }, &[0xFD, 0x01, 0x85]
 When writing RCWT files, set `creating_program` and `program_version` to identify
 your program. This helps track which software produced the file if there are bugs
 in the future. Known values: `0xCC` for CCExtractor, `0xFF` for FFmpeg. The included
-rcwt-split, rcwt-trim, rcwt-crop, and rcwt-shift set `creating_program` to ASCII 'r' (0x72) and 
+rcwt-split, rcwt-trim, rcwt-crop, rcwt-shift, and rcwt-concat set `creating_program` to ASCII 'r' (0x72) and 
 `program_version` to 1.
 
 ## Specification

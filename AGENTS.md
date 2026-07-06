@@ -92,6 +92,9 @@ rcwt-report [--json] <input.rcwt>   # Prints file header info, entry count, firs
 rcwt-csv <input.rcwt>      # Dumps all entries as CSV: index, fts_ms, fts_iso, size_bytes, data_hex
 rcwt-split <input.rcwt>    # Splits into CC1-CC4 and CEA-708 RCWT files
 rcwt-trim <input> <output> <N>  # Copies first N entries to a new RCWT file
+rcwt-crop <input> <output> <start_fts> <end_fts>  # Copies entries within FTS range
+rcwt-shift <input> <output> <delta_ms>  # Shifts all FTS values by a signed delta
+rcwt-concat <inputs...> <output>  # Concatenates multiple RCWT files with overlap check
 ```
 
 Run with: `cargo run --bin rcwt-report -- <file>`
