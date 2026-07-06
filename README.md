@@ -74,7 +74,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-rcwt-rs = "0.1.0"
+rcwt-rs = "0.1.1"
 ```
 
 ### Reading
