@@ -95,6 +95,7 @@ rcwt-trim <input> <output> <N>  # Copies first N entries to a new RCWT file
 rcwt-crop <input> <output> <start_fts> <end_fts>  # Copies entries within FTS range
 rcwt-shift <input> <output> <delta_ms>  # Shifts all FTS values by a signed delta
 rcwt-concat <inputs...> <output>  # Concatenates multiple RCWT files with overlap check
+rcwt-header-free <input> <output>  # Strip FileHeader, emit raw entry stream verbatim
 ```
 
 Run with: `cargo run --bin rcwt-report -- <file>`
