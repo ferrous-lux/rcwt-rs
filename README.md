@@ -40,7 +40,33 @@ cargo run --bin rcwt-concat -- <input1.rcwt> [<input2.rcwt> ...] <output.rcwt>
 
 # Strip FileHeader from an RCWT file (raw entry stream to stdout or file)
 cargo run --bin rcwt-header-free -- <input.rcwt> <output.rcwt>
+
+# Prepend a default FileHeader to a raw entry stream
+cargo run --bin rcwt-add-header -- <input.raw> <output.rcwt>
+
+# Build an RCWT file from CSV (fts_ms,data_hex or rcwt-csv format)
+cargo run --bin csv-rcwt -- <input.csv> <output.rcwt>
 ```
+
+### csv-rcwt Input Formats
+
+`csv-rcwt` accepts two comma-separated formats and auto-detects which one is being used:
+
+**Minimal (2 columns):**
+```csv
+fts_ms,data_hex
+100,FD0185
+200,FD0186FD0187
+```
+
+**rcwt-csv output (5 columns):**
+```csv
+index,fts_ms,fts_iso,size_bytes,data_hex
+1,100,00:00:00.100,3,FD0185
+2,200,00:00:00.200,6,FD0186FD0187
+```
+
+The header row (`index,fts_ms,...`) is detected and skipped automatically. Lines with 2 fields are parsed as `fts_ms,data_hex`. Lines with 5 fields use the same columns as `rcwt-csv` output. The hex data length must be a multiple of 3 (each CC block is 3 bytes).
 
 ## Usage in Your Project
 
@@ -89,7 +115,7 @@ builder.append(&TimeHeader { fts: FTS(100), num_blocks: 1 }, &[0xFD, 0x01, 0x85]
 When writing RCWT files, set `creating_program` and `program_version` to identify
 your program. This helps track which software produced the file if there are bugs
 in the future. Known values: `0xCC` for CCExtractor, `0xFF` for FFmpeg. The included
-rcwt-split, rcwt-trim, rcwt-crop, rcwt-shift, rcwt-concat, and rcwt-header-free set `creating_program` to ASCII 'r' (0x72) and 
+rcwt-split, rcwt-trim, rcwt-crop, rcwt-shift, rcwt-concat, rcwt-header-free, rcwt-add-header, and csv-rcwt set `creating_program` to ASCII 'r' (0x72) and 
 `program_version` to 1.
 
 ## Specification

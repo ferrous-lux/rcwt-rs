@@ -96,6 +96,8 @@ rcwt-crop <input> <output> <start_fts> <end_fts>  # Copies entries within FTS ra
 rcwt-shift <input> <output> <delta_ms>  # Shifts all FTS values by a signed delta
 rcwt-concat <inputs...> <output>  # Concatenates multiple RCWT files with overlap check
 rcwt-header-free <input> <output>  # Strip FileHeader, emit raw entry stream verbatim
+rcwt-add-header <input> <output>  # Prepend a default FileHeader to a raw entry stream
+csv-rcwt <input> <output>  # Build RCWT from CSV (fts_ms,data_hex or rcwt-csv format)
 ```
 
 Run with: `cargo run --bin rcwt-report -- <file>`
