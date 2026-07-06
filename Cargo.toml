@@ -1,6 +1,6 @@
 [package]
 name = "rcwt-rs"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Ferris Luxor ferrous_lux@hotmail.com"]
 description = "Rust library for reading and writing CCExtractor RCWT binary caption files"
